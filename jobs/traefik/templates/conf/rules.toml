@@ -1,1 +1,0 @@
-<% if_p('traefik.file.rules') do |rules| %><%= rules %><% end %>

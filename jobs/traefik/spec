@@ -8,18 +8,17 @@ templates:
   bin/bpm-prestart: bin/bpm-prestart
   bin/dns/healthy: bin/dns/healthy
   bpm.yml: config/bpm.yml
-  conf/traefik.toml: conf/traefik.toml
-  conf/rules.toml: conf/rules.toml
-  tls/traefik-default.crt: tls/traefik-default.crt
-  tls/traefik-default.key: tls/traefik-default.key
-  tls/web-backend.crt: tls/web-backend.crt
-  tls/web-backend.key: tls/web-backend.key
-  tls/api-entrypoint-ca.crt: tls/api-entrypoint-ca.crt
-  tls/api-entrypoint.crt: tls/api-entrypoint.crt
-  tls/api-entrypoint.key: tls/api-entrypoint.key
-  tls/consul-ca-bundle.crt: tls/consul-ca-bundle.crt
-  tls/consul-client.crt: tls/consul-client.crt
-  tls/consul-client.key: tls/consul-client.key
+  conf/traefik.yml: conf/traefik.yml
+  tls/01.crt: tls/01.crt
+  tls/01.key: tls/01.key
+  tls/02.crt: tls/02.crt
+  tls/02.key: tls/02.key
+  tls/03.crt: tls/03.crt
+  tls/03.key: tls/03.key
+  tls/04.crt: tls/04.crt
+  tls/04.key: tls/04.key
+  tls/05.crt: tls/05.crt
+  tls/05.key: tls/05.key
 
 packages:
   - traefik
@@ -28,25 +27,8 @@ provides:
   - name: traefik
     type: traefik
     properties:
-      - traefik.http.enabled
-      - traefik.http.port
-      - traefik.tls.enabled
-      - traefik.tls.port
-      - traefik.tls.cert
-      - traefik.api.enabled
-      - traefik.api.tls.port
-      - traefik.api.tls.cert
-      - traefik.api.digest_auth.username
-      - traefik.api.digest_auth.password
-      - traefik.rest.enabled
-  - name: traefik-address
-    type: address
-
-consumes:
-  - name: consul-servers
-    type: consul
-    optional: true
-
+      - traefik.conf
+      
 properties:
   bpm.enabled:
     description: |
@@ -54,317 +36,69 @@ properties:
       the benefit of improved security measures at runtime.
     default: false
 
-  traefik.debug:
+  traefik.config:
     description: |
-      Whether to enable debug mode.
+      This is a bosh release as single instance. So provide unter traefik.conf 
+      property the full configuration
 
-      This mode should never be enabled in production because it exposes
-      internal state of the Traefik server that malicious users should not
-      have access to.
-
-      This will install HTTP handlers to expose Go expvars under /debug/vars
-      and pprof profiling data under /debug/pprof.
-
-      The log level will be set to DEBUG unless 'log_level' is specified.
-    default: false
-  traefik.log_level:
+      default: false
+  
+  traefik.tls.crt.01:
     description: |
-      The level of details in Traefik logs.
+      copy the tls.crt.01 to ../conf/tls/01.crt
 
-      Possible values are:
-      - DEBUG (the most verbose level)
-      - INFO
-      - WARN
-      - ERROR
-      - FATAL
-      - PANIC (the least verbose level)
-    default: INFO
-  traefik.access_logs.enabled:
+      default: false
+
+  traefik.tls.crt.02:
     description: |
-      Whether to activate the access logs. This will produce one line for each
-      access to the Traefik server. This might generate high volume of data
-      under high loads.
-    default: true
+      copy the tls.crt.02 to ../conf/tls/02.crt
 
-  traefik.accept_invalid_backend_certificates:
+      default: false
+
+  traefik.tls.crt.03:
     description: |
-      Whether invalid SSL certificates are accepted for backends.
+      copy the tls.crt.03 to ../conf/tls/03.crt
 
-      This disables detection of man-in-the-middle attacks so should be used
-      on trusted backend networks only.
-    default: false
+      default: false
 
-
-  traefik.http.enabled:
+  traefik.tls.crt.04:
     description: |
-      Whether to activate the HTTP entrypoint.
-    default: true
-  traefik.http.port:
+      copy the tls.crt.04 to ../conf/tls/04.crt
+
+      default: false
+
+  traefik.tls.crt.05:
     description: |
-      TCP port for the HTTP entrypoint.
+      copy the tls.crt.05 to ../conf/tls/05.crt
 
-      When 'bpm.enabled' is 'false' and both this port and 'traefik.tls.port'
-      (as well as 'traefik.api.tls.port' and the deprecated
-      'traefik.web.port') are above 1024, then Traefik runs as 'vcap' instead
-      of 'root'.
-    default: 80
-  traefik.http.redirect_to_https:
+      default: false
+
+  traefik.tls.key.01:
     description: |
-      Whether the HTTP entrypoint redirects all web requests to the HTTPS
-      entrypoint or not.
-    default: true
+      copy the tls.key.01 to ../conf/tls/01.key
 
+      default: false
 
-  traefik.tls.enabled:
+  traefik.tls.key.02:
     description: |
-      Whether to activate the HTTPS entrypoint.
-    default: true
-  traefik.tls.port:
+      copy the tls.key.02 to ../conf/tls/02.key
+
+      default: false
+
+  traefik.tls.key.03:
     description: |
-      TCP port for the HTTPS entrypoint.
+      copy the tls.key.03 to ../conf/tls/03.key
 
-      When 'bpm.enabled' is 'false' and both this port and 'traefik.http.port'
-      (as well as 'traefik.api.tls.port' and the deprecated
-      'traefik.web.port') are above 1024, then Traefik runs as 'vcap' instead
-      of 'root'.
-    default: 443
-  traefik.tls.cert:
-    type: certificate
+      default: false
+
+  traefik.tls.key.04:
     description: |
-      The default TLS certificate to present on HTTPS entrypoint.
-  traefik.tls.min_version:
+      copy the tls.key.04 to ../conf/tls/04.key
+
+      default: false
+
+  traefik.tls.key.05:
     description: |
-      The minimum TLS version to be used by the HTTPS entrypoint.
-    default: VersionTLS12
+      copy the tls.key.05 to ../conf/tls/05.crt
 
-
-  traefik.acme.enabled:
-    description: |
-      Whether to activate automatic Let's Encrypt certificates.
-    default: false
-  traefik.acme.certs_email:
-    description: |
-      Email address used for ACME certificate registration.
-
-      This address will receive expiration notice emails before certificates
-      will expire. Please note that Traefik automatically renew those
-      certificates before they actually expire. So you usually need not take
-      action uppon receiving expiration notice when running Traefik.
-    example: acme-certs-contact@example.com
-  traefik.acme.staging:
-    description: |
-      Run on the staging Let's Encrypt server.
-
-      This is recommended for a first start because the Let's Encrypt
-      production server enforces restrictive quotas that you can easily hit in
-      case you have any configuration issue. That's why you first need to
-      first validate your setup with the staging server before switching to
-      the production server.
-    default: true
-
-
-  traefik.api.enabled:
-    description: |
-      Whether the Traefik API and Dashboard should be enabled.
-
-      This will enable:
-        - A REST API endpoint.
-        - A web UI that can be used to dynamically read or modify the Traefik
-          configuration.
-        - A '/ping' endpoint for healthchecks.
-        - A metrics endpoint for Prometheus to scrape.
-
-      This BOSH Release only serves API and Dashboard on a TLS endpoint
-      protected by a Digest Auth username and password.
-
-      Please take care not exposing this endpoint to the entire Internet,
-      otherwise your server could get compromized by malicious users.
-    default: false
-  traefik.api.tls.port:
-    description: |
-      TCP port for the Traefik API and Dashboard.
-    default: 8443
-  traefik.api.tls.cert:
-    type: certificate
-    description: |
-      The TLS certificate to use for the API and Dashboard entrypoint.
-  traefik.api.tls.min_version:
-    description: |
-      The minimum TLS version to be used by the API and Dashboard entrypoint.
-    default: VersionTLS12
-  traefik.api.digest_auth.realm:
-    description: |
-      Digest Auth realm to authenticate to when accessing the Traefik API and
-      Dashboard.
-    default: traefik
-  traefik.api.digest_auth.username:
-    description: |
-      Digest Auth username to access the Traefik API and Dashboard.
-  traefik.api.digest_auth.password:
-    description: |
-      Digest Auth password to access the Traefik API and Dashboard.
-
-
-  traefik.rest.enabled:
-    description: |
-      Whether the REST provider is enabled or not.
-
-      When enabled, the REST provider is served on the same entrypoint as the
-      API. Then the Traefik API is no more read-only, and the configuration
-      can be modified dynamically through the API.
-    default: false
-
-
-  traefik.web.enabled:
-    description: |
-      DEPRECATED. See 'traefik.api.*' and 'traefik.rest.enabled' properties
-      instead.
-
-      Whether the 'web' backend should be enabled.
-
-      This will enable a REST API endpoint and a web UI that can be used to
-      dynamically read or modify the Traefik configuration. Please take great
-      care not exposing this endpoint to the entire Internet, otherwise your
-      server could get compromized by malicious users.
-    default: false
-  traefik.web.basic_auth.username:
-    description: |
-      DEPRECATED. See 'traefik.api.*' properties instead.
-
-      Basic Auth username to access the 'web' backend.
-  traefik.web.basic_auth.password:
-    description: |
-      DEPRECATED. See 'traefik.api.*' properties instead.
-
-      Basic Auth password to access the 'web' backend.
-
-      This value will end up being (kind of) MD5-digested (like 'htpasswd'
-      does) before it is injected in Traefik config, so it will not appear in
-      clear-text on the BOSH-managed Traefik nodes.
-  traefik.web.readonly:
-    description: |
-      DEPRECATED. See 'traefik.api.*' properties instead.
-
-      Whether the 'web' endpoint should be readonly, in which case the Traefik
-      configuration can only be read and not modified through this backend.
-    default: true
-  traefik.web.port:
-    description: |
-      DEPRECATED. See 'traefik.api.*' properties instead.
-
-      TCP port for the 'web' backend.
-
-      We advise to set '8443' here when 'traefik.web.tls.enabled' is set to
-      'true'.
-    default: 8080
-  traefik.web.tls.enabled:
-    description: |
-      DEPRECATED. See 'traefik.api.*' properties instead.
-
-      Whether to activate TLS for the 'web' backend.
-    default: false
-  traefik.web.tls.cert:
-    type: certificate
-    description: |
-      DEPRECATED. See 'traefik.api.*' properties instead.
-
-      The TLS certificate to use for the 'web' backend.
-
-
-  traefik.file.enabled:
-    description: |
-      Whether the 'file' backend should be enabled.
-    default: false
-  traefik.file.rules:
-    description: |
-      A verbatim of rules to use for the 'file' backend.
-
-      See <https://docs.traefik.io/configuration/backends/file/> for more
-      information on the TOML syntax used here.
-    example: |
-      [backends]
-        [backends.backend1]
-          [backends.backend1.circuitbreaker]
-          expression = "NetworkErrorRatio() > 0.5"
-          [backends.backend1.servers.server1]
-          url = "http://172.17.0.2:80"
-          weight = 10
-          [backends.backend1.servers.server2]
-          url = "http://172.17.0.3:80"
-          weight = 1
-
-        [backends.backend2]
-          [backends.backend2.maxconn]
-          amount = 10
-          extractorfunc = "request.host"
-          [backends.backend2.LoadBalancer]
-          method = "drr"
-          [backends.backend2.servers.server1]
-          url = "http://172.17.0.4:80"
-          weight = 1
-          [backends.backend2.servers.server2]
-          url = "http://172.17.0.5:80"
-          weight = 2
-
-      [frontends]
-        [frontends.frontend1]
-        backend = "backend2"
-          [frontends.frontend1.routes.test_1]
-          rule = "Host:test.localhost"
-
-        [frontends.frontend2]
-        backend = "backend1"
-        passHostHeader = true
-        priority = 10
-        entrypoints = ["https"] # overrides defaultEntryPoints
-          [frontends.frontend2.routes.test_1]
-          rule = "Host:{subdomain:[a-z]+}.localhost"
-
-        [frontends.frontend3]
-        entrypoints = ["http", "https"] # overrides defaultEntryPoints
-        backend = "backend2"
-        rule = "Path:/test"
-  traefik.file.watch:
-    description: |
-      Whether Traefik should watch the rules file for any dynamic change.
-    default: false
-
-
-  traefik.consul.enabled:
-    description: |
-      Wether Traefik clustering should be enabled, with configuration in
-      Consul Key-Value store.
-
-      When this property is set to 'true', the 'consul-servers' link must
-      resolve to an instance group of Consul servers.
-    default: false
-
-  traefik.consul.disable_acme_local_storage_file:
-    description: |
-      After the ACME certificates have been uploaded once to the KV store, the
-      'storage' directive in '[acme]' section of the Traefik config file
-      should be removed.
-
-      After adopting 'traefik.consul.enabled' and successfully deploy Traefik,
-      this property should be set to 'true' and Traefik should be re-deployed.
-    default: false
-
-  traefik.consul.prefix:
-    description: |
-      The namespace prefix to use when storing Traefik cluster configuration
-      in Consul Key-Value store.
-    default: traefik
-
-  traefik.consul.client_cert:
-    type: certificate
-    description: |
-      The client certificate to use when authenticating to Consul.
-
-  traefik.consul.ca_bundle:
-    description: |
-      The concatenated CA certificates to trust. Specifying both old and new
-      CA certificates here is essential for rotating CA certificates.
-
-      When this property is not specified, the trusted Certificate Authority
-      defaults to the CA certificate of the 'traefik.consul.client_cert'
-      certificate.
+      default: false

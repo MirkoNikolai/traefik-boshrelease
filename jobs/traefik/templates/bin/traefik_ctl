@@ -28,19 +28,10 @@ case $1 in
         mkdir -p /var/vcap/data/sys/run/traefik
         echo $$ > /var/vcap/data/sys/run/traefik/traefik.pid
 
-<%
-    if p('traefik.http.port') < 1024 or
-        p('traefik.tls.port') < 1024 or
-        p('traefik.web.port') < 1024 or
-        p('traefik.api.tls.port') < 1024
--%>
+
         exec /var/vcap/packages/traefik/bin/traefik \
-            -c /var/vcap/jobs/traefik/conf/traefik.toml
-<% else -%>
-        exec chpst -u vcap:vcap \
-            /var/vcap/packages/traefik/bin/traefik \
-            -c /var/vcap/jobs/traefik/conf/traefik.toml
-<% end -%>
+            -c /var/vcap/jobs/traefik/conf/traefik.yml
+            
         ;;
     stop)
         kill "$(cat /var/vcap/data/sys/run/traefik/traefik.pid)"

@@ -1,5 +1,5 @@
 ---
-name: ((deployment_name))
+name: traefik-single
 
 instance_groups:
   - name: traefik
@@ -9,46 +9,42 @@ instance_groups:
       - name: traefik
         release: traefik
         properties:
-          traefik:
-            log_level: INFO
-            access_logs: { enabled: true }
-            http: { enabled: true }
-            tls:
-              cert: ((traefik_tls))
           bpm:
             enabled: true
+          traefik:
+            config: |
+              entryPoints:
+                web:
+                  address: ":80"
+                web-secure:
+                  address: ":443"
+              providers:
+                # Enable the file provider to define routers / middlewares / services in a file
+                file:
+                  directory: /etc/traefik/conf.d
+                  watch: true
+              certificatesResolvers:
+                default:
+                  acme:
+                    email: mnikolai@evoila.de
+                    storage: /var/vcap/store/traefik/acme
+                    httpChallenge:
+                      # used during the challenge
+                      entryPoint: web
+              log:
+                filePath: /var/vcap/sys/log/traefik/traefik.log
+              accessLog:
+                filePath: /var/vcap/sys/log/traefik/access.log
+ 
       - name: bpm
         release: bpm
-      - name: smoke-tests
-        release: traefik
     stemcell: default
     vm_type: default
     persistent_disk_type: default
     env:
       bosh: { swap_size: 0 }
     networks:
-      - name: ((network_name))
-
-variables:
-  - name: traefikCA
-    type: certificate
-    options:
-      is_ca: true
-      common_name: traefikCA
-    update_mode: converge
-
-  - name: traefik_tls
-    type: certificate
-    options:
-      ca: traefikCA
-      common_name: ((traefik_domain))
-      alternative_names:
-        - ((traefik_domain))
-        - "*.((traefik_domain))"
-    update_mode: converge
-
-features:
-  use_dns_addresses: true
+      - name: default
 
 update:
   serial: false
@@ -65,14 +61,9 @@ stemcells:
     version: latest
 
 releases:
-- name: traefik
-  sha1: a02e206ca0c1a5e493ea14cca1e3e828101d064f
-  stemcell:
-    os: ubuntu-xenial
-    version: "621.29"
-  url: https://s3.eu-west-3.amazonaws.com/traefik-boshrelease/compiled-releases/traefik/traefik-1.11.0-ubuntu-xenial-621.29-20191211-002326-374535001-20191211002327.tgz
-  version: 1.11.0
 - name: bpm
   sha1: 5bad6161dbbcf068830a100b6a76056fe3b99bc8
   url: https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.1.6
   version: 1.1.6
+- name: traefik 
+  version: latest

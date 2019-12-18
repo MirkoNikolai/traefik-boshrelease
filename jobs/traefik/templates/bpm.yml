@@ -5,7 +5,7 @@ processes:
       pre_start: /var/vcap/jobs/traefik/bin/bpm-prestart
     executable: /var/vcap/packages/traefik/bin/traefik
     args:
-      - --configfile=/var/vcap/jobs/traefik/conf/traefik.toml
+      - --configfile=/var/vcap/jobs/traefik/conf/traefik.yml
     capabilities:
       # Allow Traefik to bind sockets to Internet domain privileged ports
       # (port numbers less than 1024):
