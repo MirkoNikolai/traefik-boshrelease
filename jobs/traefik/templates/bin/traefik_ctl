@@ -20,7 +20,7 @@ chown vcap:vcap /var/vcap/store/traefik/acme
 chmod 700 /var/vcap/store/traefik/acme
 
 
-chmod 600 /var/vcap/jobs/traefik/tls/*.key
+chmod 600 /var/vcap/jobs/traefik/config/tls/*.key
 
 
 case $1 in
@@ -28,9 +28,8 @@ case $1 in
         mkdir -p /var/vcap/data/sys/run/traefik
         echo $$ > /var/vcap/data/sys/run/traefik/traefik.pid
 
-
         exec /var/vcap/packages/traefik/bin/traefik \
-            -c /var/vcap/jobs/traefik/conf/traefik.yml
+            -c /var/vcap/jobs/traefik/config/traefik.yml
             
         ;;
     stop)

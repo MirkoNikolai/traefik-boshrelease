@@ -1,0 +1,119 @@
+---
+name: traefik-int
+
+instance_groups:
+  - name: traefik
+    instances: 1
+    azs: [ z1 ]
+    jobs:
+      - name: traefik
+        release: traefik
+        properties:
+          bpm:
+            enabled: true
+          traefik:
+            base_config: |
+              entryPoints:
+                web:
+                  address: ":80"
+                web-secure:
+                  address: ":443"
+              providers:
+                file:
+                  directory: /var/vcap/jobs/traefik/config.d/
+                  watch: true
+              certificatesResolvers:
+                default:
+                  acme:
+                    email: mirko@oranienhof.de
+                    storage: /var/vcap/store/traefik/acme/acme-data.json
+                    httpChallenge:
+                      # used during the challenge
+                      entryPoint: web
+              log:
+                level: info
+                filePath: /var/vcap/sys/log/traefik/traefik.log
+              accessLog:
+                filePath: /var/vcap/sys/log/traefik/access.log 
+              api:
+                debug: false
+                insecure: true
+                dashboard: true
+
+            dynamic_config: |  
+              http:
+                routers:
+                  sso:
+                    # won't listen to entry point web
+                    entryPoints:
+                      - "web-secure"
+                    rule: "Host(`sso.int.evoila.xyz`)"
+                    tls:
+                      certResolver: "default"
+                      domains:
+                        - main: "sso.int.evoila.xyz"
+                    service: sso
+                  sso-web:
+                    entryPoints:
+                      - "web"
+                    rule: "Host(`sso.int.evoila.xyz`)"
+                    middlewares:
+                      - redirect
+                    service: sso
+                  ci:
+                    # won't listen to entry point web
+                    entryPoints:
+                      - "web-secure"
+                    rule: "Host(`ci.evoila.xyz`)"
+                    tls:
+                      certResolver: "default"
+                      domains:
+                        - main: "ci.evoila.xyz"
+                    service: ci
+                    
+                middlewares:
+                  redirect:
+                    redirectScheme:
+                      scheme: https
+                services:
+                  sso:
+                    loadBalancer:
+                      servers:
+                        - url: "http://10.0.5.9:8080/"
+                  ci:
+                    loadBalancer:
+                      servers:
+                        - url: "http://10.0.5.5:8080"
+      - name: bpm
+        release: bpm
+    stemcell: default
+    vm_type: default
+    persistent_disk_type: default
+    env:
+      bosh: { swap_size: 0 }
+    networks:
+    - name: itg-stg-htf
+      static_ips:
+      - 10.0.5.10	 
+
+update:
+  serial: false
+
+  canaries: 1
+  canary_watch_time: 1000-5000
+
+  max_in_flight: 1
+  update_watch_time: 1000-5000
+
+stemcells:
+  - alias: default
+    os: ubuntu-xenial
+    version: latest
+
+releases:
+- name: bpm
+  sha1: 5bad6161dbbcf068830a100b6a76056fe3b99bc8
+  url: https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.1.6
+  version: 1.1.6
+- name: traefik 
+  version: latest

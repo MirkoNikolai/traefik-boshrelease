@@ -8,17 +8,19 @@ templates:
   bin/bpm-prestart: bin/bpm-prestart
   bin/dns/healthy: bin/dns/healthy
   bpm.yml: config/bpm.yml
-  conf/traefik.yml: conf/traefik.yml
-  tls/01.crt: tls/01.crt
-  tls/01.key: tls/01.key
-  tls/02.crt: tls/02.crt
-  tls/02.key: tls/02.key
-  tls/03.crt: tls/03.crt
-  tls/03.key: tls/03.key
-  tls/04.crt: tls/04.crt
-  tls/04.key: tls/04.key
-  tls/05.crt: tls/05.crt
-  tls/05.key: tls/05.key
+  config/traefik.yml: config/traefik.yml
+  config.d/dynamic.readme: config.d/dynamic.readme
+  config.d/dynamic.yml: config.d/dynamic.yml
+  config/tls/01.crt: config/tls/01.crt
+  config/tls/01.key: config/tls/01.key
+  config/tls/02.crt: config/tls/02.crt
+  config/tls/02.key: config/tls/02.key
+  config/tls/03.crt: config/tls/03.crt
+  config/tls/03.key: config/tls/03.key
+  config/tls/04.crt: config/tls/04.crt
+  config/tls/04.key: config/tls/04.key
+  config/tls/05.crt: config/tls/05.crt
+  config/tls/05.key: config/tls/05.key
 
 packages:
   - traefik
@@ -27,7 +29,8 @@ provides:
   - name: traefik
     type: traefik
     properties:
-      - traefik.conf
+      - traefik.base_config
+      - traefik.dynamic_config
       
 properties:
   bpm.enabled:
@@ -36,10 +39,42 @@ properties:
       the benefit of improved security measures at runtime.
     default: false
 
-  traefik.config:
+  traefik.api.enabled:
+    description: |
+      Whether the Traefik API should be enabled.
+
+      This will enable:
+        - A REST API endpoint.
+        - A '/ping' endpoint for healthchecks.
+        - A metrics endpoint for Prometheus to scrape.
+
+      Please take care not exposing this endpoint to the entire Internet,
+      otherwise your server could get compromized by malicious users.
+    default: false
+    
+  traefik.dashboard.enabled:
+    description: |
+      Whether the Traefik API should be enabled.
+
+      This will enable:
+        - A web UI that can be used to dynamically read or modify the Traefik
+          configuration.
+    
+      Please take care not exposing this endpoint to the entire Internet,
+      otherwise your server could get compromized by malicious users.
+    default: false
+
+
+  traefik.base_config:
     description: |
       This is a bosh release as single instance. So provide unter traefik.conf 
       property the full configuration
+
+      default: false
+  
+  traefik.dynamic_config:
+    description: |
+      This is a bosh release as single instance. This is the dynamic configuration part
 
       default: false
   

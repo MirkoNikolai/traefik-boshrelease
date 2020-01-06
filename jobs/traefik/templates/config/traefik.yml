@@ -1,4 +1,4 @@
 ################################################################
 # Traefik configuration
 ################################################################
-<% if_p('traefik.config') do |conf| %><%= conf %><% end %>
+<% if_p('traefik.base_config') do |conf| %><%= conf %><% end %>
