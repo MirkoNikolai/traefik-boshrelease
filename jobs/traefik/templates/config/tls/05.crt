@@ -1,1 +1,0 @@
-<% if_p('traefik.tls.crt.05') do |cert| %><%= cert %><% end %>

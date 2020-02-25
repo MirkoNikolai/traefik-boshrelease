@@ -11,16 +11,16 @@ templates:
   config/traefik.yml: config/traefik.yml
   config.d/dynamic.readme: config.d/dynamic.readme
   config.d/dynamic.yml: config.d/dynamic.yml
-  config/tls/01.crt: config/tls/01.crt
-  config/tls/01.key: config/tls/01.key
-  config/tls/02.crt: config/tls/02.crt
-  config/tls/02.key: config/tls/02.key
-  config/tls/03.crt: config/tls/03.crt
-  config/tls/03.key: config/tls/03.key
-  config/tls/04.crt: config/tls/04.crt
-  config/tls/04.key: config/tls/04.key
-  config/tls/05.crt: config/tls/05.crt
-  config/tls/05.key: config/tls/05.key
+  config/tls/one.crt: config/tls/one.crt
+  config/tls/one.key: config/tls/one.key
+  config/tls/two.crt: config/tls/two.crt
+  config/tls/two.key: config/tls/two.key
+  config/tls/three.crt: config/tls/three.crt
+  config/tls/three.key: config/tls/three.key
+  config/tls/four.crt: config/tls/four.crt
+  config/tls/four.key: config/tls/four.key
+  config/tls/five.crt: config/tls/five.crt
+  config/tls/five.key: config/tls/five.key
 
 packages:
   - traefik
@@ -78,62 +78,62 @@ properties:
 
       default: false
   
-  traefik.tls.crt.01:
+  traefik.tls_crt_one:
     description: |
-      copy the tls.crt.01 to ../conf/tls/01.crt
+      copy the tls_crt.one to ../conf/tls/one.crt
 
       default: false
 
-  traefik.tls.crt.02:
+  traefik.tls_crt_two:
     description: |
-      copy the tls.crt.02 to ../conf/tls/02.crt
+      copy the tls_crt_two to ../conf/tls/two.crt
 
       default: false
 
-  traefik.tls.crt.03:
+  traefik.tls_crt_three:
     description: |
-      copy the tls.crt.03 to ../conf/tls/03.crt
+      copy the tls_crt_three to ../conf/tls/three.crt
 
       default: false
 
-  traefik.tls.crt.04:
+  traefik.tls_crt_four:
     description: |
-      copy the tls.crt.04 to ../conf/tls/04.crt
+      copy the tls_crt_four to ../conf/tls/four.crt
 
       default: false
 
-  traefik.tls.crt.05:
+  traefik.tls_crt_five:
     description: |
-      copy the tls.crt.05 to ../conf/tls/05.crt
+      copy the tls_crt_five to ../conf/tls/five.crt
 
       default: false
 
-  traefik.tls.key.01:
+  traefik.tls_key_one:
     description: |
-      copy the tls.key.01 to ../conf/tls/01.key
+      copy the tls.key.one to ../conf/tls/one.key
 
       default: false
 
-  traefik.tls.key.02:
+  traefik.tls_key_two:
     description: |
-      copy the tls.key.02 to ../conf/tls/02.key
+      copy the tls_key_two to ../conf/tls/two.key
 
       default: false
 
-  traefik.tls.key.03:
+  traefik.tls_key_three:
     description: |
-      copy the tls.key.03 to ../conf/tls/03.key
+      copy the tls_key_three to ../conf/tls/three.key
 
       default: false
 
-  traefik.tls.key.04:
+  traefik.tls_key_four:
     description: |
-      copy the tls.key.04 to ../conf/tls/04.key
+      copy the tls_key_four to ../conf/tls/four.key
 
       default: false
 
-  traefik.tls.key.05:
+  traefik.tls_key_five:
     description: |
-      copy the tls.key.05 to ../conf/tls/05.crt
+      copy the tls_key_five to ../conf/tls/five.crt
 
       default: false
