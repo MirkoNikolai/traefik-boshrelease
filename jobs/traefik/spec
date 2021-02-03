@@ -69,37 +69,31 @@ properties:
     description: |
       This is a bosh release as single instance. So provide unter traefik.conf 
       property the full configuration
-
       default: false
   
   traefik.dynamic_config:
     description: |
       This is a bosh release as single instance. This is the dynamic configuration part
-
       default: false
   
   traefik.tls_crt_one:
     description: |
       copy the tls_crt.one to ../conf/tls/one.crt
-
       default: false
 
   traefik.tls_crt_two:
     description: |
       copy the tls_crt_two to ../conf/tls/two.crt
-
       default: false
 
   traefik.tls_crt_three:
     description: |
       copy the tls_crt_three to ../conf/tls/three.crt
-
       default: false
 
   traefik.tls_crt_four:
     description: |
       copy the tls_crt_four to ../conf/tls/four.crt
-
       default: false
 
   traefik.tls_crt_five:

@@ -6,5 +6,4 @@ mkdir "$BOSH_INSTALL_TARGET/bin"
 
 tar xf traefik/traefik_*_linux_amd64.tar.gz -C /tmp/ 
 mv /tmp/traefik  "$BOSH_INSTALL_TARGET/bin/traefik"
-
 chmod +x "$BOSH_INSTALL_TARGET/bin/traefik"
